@@ -1,8 +1,9 @@
-        # The MIT License
+# The MIT License
 #
 # Copyright (c) 2007 Damon Kohler
 # Copyright (c) 2015 Jonathan Le Roux (Modifications for Create 2)
 # Copyright (c) 2015 Brandon Pomeroy
+# Copyright (c) 2017 Felix Groll
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -21,6 +22,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
 
 import json
 import serial
@@ -84,7 +86,7 @@ class Config(object):
     """
 
     def __init__(self, fileName='config.json'):
-        self.fname = fileName;
+        self.fname = fileName
         self.data = None
 
     def load(self):
@@ -213,7 +215,6 @@ class Create2(object):
         else:
             raise ROIDataByteError("Invalid buad rate")
 
-
     def safe(self):
         """Puts the Create 2 into safe mode. Blocks for a short (<.5 sec) amount of time so the
             bot has time to change modes.
@@ -261,13 +262,13 @@ class Create2(object):
         day = day.lower()
 
         day_dict = dict(
-            sunday = 0,
-            monday = 1,
-            tuesday = 2,
-            wednesday = 3,
-            thursday = 4,
-            friday = 5,
-            saturday = 6
+            sunday=0,
+            monday=1,
+            tuesday=2,
+            wednesday=3,
+            thursday=4,
+            friday=5,
+            saturday=6
             )
 
         if day in day_dict:
@@ -308,20 +309,18 @@ class Create2(object):
         v = None
         r = None
 
-        #Check to make sure we are getting sent valid velocity/radius.
-
-
+        # Check to make sure we are getting sent valid velocity/radius.
         if velocity >= -500 and velocity <= 500:
             v = int(velocity) & 0xffff
-            #Convert 16bit velocity to Hex
+            # Convert 16bit velocity to Hex
         else:
             noError = False
             raise ROIDataByteError("Invalid velocity input")
 
         if radius == 32767 or radius == -1 or radius == 1:
-            #Special case radius
+            # Special case radius
             r = int(radius) & 0xffff
-            #Convert 16bit radius to Hex
+            # Convert 16bit radius to Hex
         else:
             if radius >= -2000 and radius <= 2000:
                 r = int(radius) & 0xffff
@@ -332,36 +331,35 @@ class Create2(object):
 
         if noError:
             data = struct.unpack('4B', struct.pack('>2H', v, r))
-            #An example of what data looks like:
-            #print data >> (255, 56, 1, 244)
+            # An example of what data looks like:
+            # print data >> (255, 56, 1, 244)
 
-            #data[0] = Velocity high byte
-            #data[1] = Velocity low byte
-            #data[2] = Radius high byte
-            #data[3] = Radius low byte
+            # data[0] = Velocity high byte
+            # data[1] = Velocity low byte
+            # data[2] = Radius high byte
+            # data[3] = Radius low byte
 
-            #Normally we would convert data to a tuple before sending it to SCI
-            #   But struct.unpack already returns a tuple.
+            # Normally we would convert data to a tuple before sending it to SCI
+            # But struct.unpack already returns a tuple.
 
             self.SCI.send(self.config.data['opcodes']['drive'], data)
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
 
-
     def drive_direct(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def drive_pwm(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def motors(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def motors_pwm(self, main_pwm, side_pwm, vacuum_pwm):
         """Serial sequence: [144] [Main Brush PWM] [Side Brush PWM] [Vacuum PWM]
@@ -374,7 +372,7 @@ class Create2(object):
         noError = True
         data = []
 
-        #First check that our data is within bounds
+        # First check that our data is within bounds
         if main_pwm >= -127 and main_pwm <= 127:
             data[0] = main_pwm
         else:
@@ -391,32 +389,31 @@ class Create2(object):
             noError = False
             raise ROIDataByteError("Invalid Vacuum input")
 
-        #Send it off if there were no errors.
+        # Send it off if there were no errors.
         if noError:
             self.SCI.send(self.config.data['opcodes']['motors_pwm'], tuple(data))
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
 
-
     def led(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def scheduling_led(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def digit_led_raw(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def buttons(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def digit_led_ascii(self, display_string):
         """This command controls the four 7 segment displays using ASCII character codes.
@@ -431,17 +428,17 @@ class Create2(object):
         """
         noError = True
         display_string = display_string.upper()
-        #print display_string
+        # print display_string
         if len(display_string) == 4:
             display_list = []
         else:
-            #Too many or too few characters!
+            # Too many or too few characters!
             noError = False
             raise ROIDataByteError("Invalid ASCII input (Must be EXACTLY four characters)")
         if noError:
-            #Need to map ascii to numbers from the dict.
-            for i in range (0,4):
-                #Check that the character is in the list, if it is, add it.
+            # Need to map ascii to numbers from the dict.
+            for i in range(0, 4):
+                # Check that the character is in the list, if it is, add it.
                 if display_string[i] in self.config.data['ascii table']:
                     display_list.append(self.config.data['ascii table'][display_string[i]])
                 else:
@@ -451,47 +448,47 @@ class Create2(object):
                     warnings.formatwarning = custom_format_warning
                     warnings.warn("Warning: Char '" + display_string[i] + "' was not found in ascii table")
 
-            #print display_list
+            # print display_list
             self.SCI.send(self.config.data['opcodes']['digit_led_ascii'], tuple(display_list))
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
 
 
 
-  #NOTE ABOUT SONGS: For some reason you cannot play a new song immediately after playing a different one, only the first song will play. You have to time.sleep() at least a fraction of a second for the speaker to process
+  # NOTE ABOUT SONGS: For some reason you cannot play a new song immediately after playing a different one, only the first song will play. You have to time.sleep() at least a fraction of a second for the speaker to process
     def song(self):
         """Not implementing this for now.
         """
-        #test sequence
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # test sequence
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def play_test_sound(self):
         """written to figure out how to play sounds. creates a song with a playlist of notes and durations and then plays it through the speaker using a hilariously messy spread of concatenated lists
         """
         noError = True
-        #sets lengths of notes
+        # sets lengths of notes
         short_note = 8
         medium_note = 16
         long_note = 20
 
-        #stores a 4 note song in song 3
+        # stores a 4 note song in song 3
         current_song = 3
         song_length = 4
-        song_setup = [current_song,song_length]
+        song_setup = [current_song, song_length]
         play_list = []
 
-        #writes the song note commands to play_list
-        #change these to change notes
-        play_list.extend([self.config.data['midi table']['C#4'],medium_note])
-        play_list.extend([self.config.data['midi table']['G4'],long_note])
-        play_list.extend([self.config.data['midi table']['A#3'],short_note])
-        play_list.extend([self.config.data['midi table']['A3'],short_note])
+        # writes the song note commands to play_list
+        # change these to change notes
+        play_list.extend([self.config.data['midi table']['C#4'], medium_note])
+        play_list.extend([self.config.data['midi table']['G4'], long_note])
+        play_list.extend([self.config.data['midi table']['A#3'], short_note])
+        play_list.extend([self.config.data['midi table']['A3'], short_note])
 
-        #adds up the various commands and arrays
+        # adds up the various commands and arrays
         song_play = [self.config.data['opcodes']['play'], current_song]
         play_sequence = [song_setup + play_list + song_play]
 
-        #flattens array
+        # flattens array
         play_sequence = [val for sublist in play_sequence for val in sublist]
 
         if noError:
@@ -499,24 +496,22 @@ class Create2(object):
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
 
-
-
-    def create_song(self,song_number,play_list):
+    def create_song(self, song_number, play_list):
         """create a new song from a playlist of notes and durations and tells the robot about it. Note: no error checking for playlist accuracy (must be a series of note opcodes and durations)
         """
         noError = True
 
-        #the length of the song is the length of the array divided by 2
-        song_setup = [song_number,len(play_list)/2]
+        # the length of the song is the length of the array divided by 2
+        song_setup = [song_number, len(play_list)/2]
         play_list = [song_setup + play_list]
         play_list = [val for sublist in play_list for val in sublist]
 
         if noError:
-            self.SCI.send(self.config.data['opcodes']['song'],tuple(play_list))
+            self.SCI.send(self.config.data['opcodes']['song'], tuple(play_list))
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
 
-    def play(self,song_number):
+    def play(self, song_number):
         """Plays a stored song
         """
         noError = True
@@ -526,14 +521,14 @@ class Create2(object):
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
 
-    def play_note(self,note_name,note_duration):
+    def play_note(self, note_name, note_duration):
         """Plays a single note by creating a 1 note song in song 0
         """
         current_song = 0
-        play_list=[]
+        play_list = []
         noError = True
         if noError:
-            #Need to map ascii to numbers from the dict.
+            # Need to map ascii to numbers from the dict.
 
             if note_name in self.config.data['midi table']:
                 play_list.append(self.config.data['midi table'][note_name])
@@ -544,30 +539,30 @@ class Create2(object):
                 play_list.append(self.config.data['midi table'][0])
                 warnings.formatwarning = custom_format_warning
                 warnings.warn("Warning: Note '" + note_name + "' was not found in midi table")
-            #create a song from play_list and play it
-            self.create_song(current_song,play_list)
+            # create a song from play_list and play it
+            self.create_song(current_song, play_list)
             self.play(current_song)
 
-    def play_song(self,song_number,note_string):
+    def play_song(self, song_number, note_string):
         """
         Creates and plays a new song based off a string of notes and durations.
         note_string - a string of notes,durations
         for example: 'G5,16,G3,16,A#4,30'
         """
-        #splits the string of notes and durations into two lists
-        split_list= note_string.split(',')
+        # plits the string of notes and durations into two lists
+        split_list = note_string.split(',')
         note_list = split_list[0::2]
         duration_list = split_list[1::2]
-        #creates a list for serial codes
+        # creates a list for serial codes
         play_list = []
-        #convert the durations to integers
+        # convert the durations to integers
         duration_list = map(int, duration_list)
         noError = True
 
         if noError:
-            #Need to map midi to numbers from the dict.
-            for i in range (0,len(note_list)):
-                #Check that the note is in the list, if it is, add it.
+            # Need to map midi to numbers from the dict.
+            for i in range(0, len(note_list)):
+                # Check that the note is in the list, if it is, add it.
                 if note_list[i] in self.config.data['midi table']:
                     play_list.append(self.config.data['midi table'][note_list[i]])
                     play_list.append(duration_list[i])
@@ -579,8 +574,8 @@ class Create2(object):
                     warnings.formatwarning = custom_format_warning
                     warnings.warn("Warning: Note '" + display_string[i] + "' was not found in midi table")
 
-            #play the song
-            self.create_song(song_number,play_list)
+            # play the song
+            self.create_song(song_number, play_list)
             self.play(song_number)
         else:
             raise ROIFailedToSendError("Invalid data, failed to send")
@@ -605,17 +600,17 @@ class Create2(object):
     def query_list(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def stream(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     def pause_resume_stream(self):
         """Not implementing this for now.
         """
-        #self.SCI.send(self.config.data['opcodes']['start'],0)
+        # self.SCI.send(self.config.data['opcodes']['start'],0)
 
     """ END OF OPEN INTERFACE COMMANDS
     """
@@ -662,15 +657,15 @@ class Create2(object):
         if packet_id in self.config.data['sensor group packet lengths']:
             # If a packet is in this dict, that means it is valid
             packet_size = self.config.data['sensor group packet lengths'][packet_id]
-            #Let the robot know that we want some sensor data!
+            # Let the robot know that we want some sensor data!
             self.sensors(packet_id)
-            #Read the data
+            # Read the data
             packet_byte_data = list(self.SCI.Read(packet_size))
             # Once we have the byte data, we need to decode the packet and save the new sensor state
             self.sensor_state = self.decoder.decode_packet(packet_id, packet_byte_data, self.sensor_state)
             return True
         else:
-            #The packet was invalid, raise an error
+            # The packet was invalid, raise an error
             raise ROIDataByteError("Invalid packet ID")
             return False
 
@@ -841,53 +836,53 @@ class sensorPacketDecoder(object):
         elif id == 15:
             sensor_data['dirt detect'] = self.decode_packet_15(byte_data.pop())
         elif id == 16:
-            #unused
+            # unused
             temp = self.decode_packet_16(byte_data.pop())
         elif id == 17:
             sensor_data['infared char omni'] = self.decode_packet_17(byte_data.pop())
         elif id == 18:
             sensor_data['buttons'] = self.decode_packet_18(byte_data.pop())
         elif id == 19:
-            #2
+            # 2
             sensor_data['distance'] = self.decode_packet_19(byte_data.pop(), byte_data.pop())
         elif id == 20:
-            #2
+            # 2
             sensor_data['angle'] = self.decode_packet_20(byte_data.pop(), byte_data.pop())
         elif id == 21:
             sensor_data['charging state'] = self.decode_packet_21(byte_data.pop())
         elif id == 22:
-            #2
+            # 2
             sensor_data['voltage'] = self.decode_packet_22(byte_data.pop(), byte_data.pop())
         elif id == 23:
-            #2
+            # 2
             sensor_data['current'] = self.decode_packet_23(byte_data.pop(), byte_data.pop())
         elif id == 24:
             sensor_data['temperature'] = self.decode_packet_24(byte_data.pop())
         elif id == 25:
-            #2
+            # 2
             sensor_data['battery charge'] = self.decode_packet_25(byte_data.pop(), byte_data.pop())
         elif id == 26:
-            #2
+            # 2
             sensor_data['battery capacity'] = self.decode_packet_26(byte_data.pop(), byte_data.pop())
         elif id == 27:
-            #2
+            # 2
             sensor_data['wall signal'] = self.decode_packet_27(byte_data.pop(), byte_data.pop())
         elif id == 28:
-            #2
+            # 2
             sensor_data['cliff left signal'] = self.decode_packet_28(byte_data.pop(), byte_data.pop())
         elif id == 29:
-            #2
+            # 2
             sensor_data['cliff front left signal'] = self.decode_packet_29(byte_data.pop(), byte_data.pop())
         elif id == 30:
-            #2
+            # 2
             sensor_data['cliff front right signal'] = self.decode_packet_30(byte_data.pop(), byte_data.pop())
         elif id == 31:
-            #2
+            # 2
             sensor_data['cliff right signal'] = self.decode_packet_31(byte_data.pop(), byte_data.pop())
         elif id == 32:
             temp = self.decode_packet_32(byte_data.pop())
         elif id == 33:
-            #2
+            # 2
             temp = self.decode_packet_33(byte_data.pop(), byte_data.pop())
         elif id == 34:
             sensor_data['charging sources available'] = self.decode_packet_34(byte_data.pop())
@@ -900,62 +895,62 @@ class sensorPacketDecoder(object):
         elif id == 38:
             sensor_data['number of stream packets'] = self.decode_packet_38(byte_data.pop())
         elif id == 39:
-            #2
+            # 2
             sensor_data['requested velocity'] = self.decode_packet_39(byte_data.pop(), byte_data.pop())
         elif id == 40:
-            #2
+            # 2
             sensor_data['requested radius'] = self.decode_packet_40(byte_data.pop(), byte_data.pop())
         elif id == 41:
-            #2
+            # 2
             sensor_data['requested right velocity'] = self.decode_packet_41(byte_data.pop(), byte_data.pop())
         elif id == 42:
-            #2
+            # 2
             sensor_data['requested left velocity'] = self.decode_packet_42(byte_data.pop(), byte_data.pop())
         elif id == 43:
-            #2
+            # 2
             sensor_data['left encoder counts'] = self.decode_packet_43(byte_data.pop(), byte_data.pop())
         elif id == 44:
-            #2
+            # 2
             sensor_data['right encoder counts'] = self.decode_packet_44(byte_data.pop(), byte_data.pop())
         elif id == 45:
             sensor_data['light bumper'] = self.decode_packet_45(byte_data.pop())
         elif id == 46:
-            #2
+            # 2
             sensor_data['light bump left signal'] = self.decode_packet_46(byte_data.pop(), byte_data.pop())
         elif id == 47:
-            #2
+            # 2
             sensor_data['light bump front left signal'] = self.decode_packet_47(byte_data.pop(), byte_data.pop())
         elif id == 48:
-            #2
+            # 2
             sensor_data['light bump center left signal'] = self.decode_packet_48(byte_data.pop(), byte_data.pop())
         elif id == 49:
-            #2
+            # 2
             sensor_data['light bump center right signal'] = self.decode_packet_49(byte_data.pop(), byte_data.pop())
         elif id == 50:
-            #2
+            # 2
             sensor_data['light bump front right signal'] = self.decode_packet_50(byte_data.pop(), byte_data.pop())
         elif id == 51:
-            #2
+            # 2
             sensor_data['light bump right signal'] = self.decode_packet_51(byte_data.pop(), byte_data.pop())
         elif id == 52:
             sensor_data['infared char left'] = self.decode_packet_52(byte_data.pop())
         elif id == 53:
             sensor_data['infared char right'] = self.decode_packet_53(byte_data.pop())
         elif id == 54:
-            #2
+            # 2
             sensor_data['left motor current'] = self.decode_packet_54(byte_data.pop(), byte_data.pop())
         elif id == 55:
-            #2
+            # 2
             sensor_data['right motor current'] = self.decode_packet_55(byte_data.pop(), byte_data.pop())
         elif id == 56:
-            #2
+            # 2
             sensor_data['main brush motor current'] = self.decode_packet_56(byte_data.pop(), byte_data.pop())
         elif id == 57:
-            #2
+            # 2
             sensor_data['side brush motor current'] = self.decode_packet_57(byte_data.pop(), byte_data.pop())
         elif id == 58:
             sensor_data['stasis'] = self.decode_packet_58(byte_data.pop())
-            ##### Single Packets END
+            # ---- Single Packets END -------------------
         elif id == 100:
             # size 80, contains 7-58 (ALL)
             sensor_data['stasis'] = self.decode_packet_58(byte_data.pop())
@@ -1050,9 +1045,6 @@ class sensorPacketDecoder(object):
         else:
             warnings.formatwarning = custom_format_warning
             warnings.warn("Warning: Packet '" + id + "' is not a valid packet!")
-
-
-        # No, Python doesn't need a switch case at all.
 
         return sensor_data
 
@@ -1599,7 +1591,6 @@ class sensorPacketDecoder(object):
         """
         return self.decode_short(low, high)
 
-
     def decode_packet_55(self, low, high):
         """ Decode Packet 55 (Right Motor Current) and return its value
 
@@ -1611,7 +1602,6 @@ class sensorPacketDecoder(object):
         """
         return self.decode_short(low, high)
 
-
     def decode_packet_56(self, low, high):
         """ Decode Packet 54 (Main Brush Motor Current) and return its value
 
@@ -1622,7 +1612,6 @@ class sensorPacketDecoder(object):
             Returns: signed 16bit short. Strength of main brush motor current from -32768 - 32767 mA
         """
         return self.decode_short(low, high)
-
 
     def decode_packet_57(self, low, high):
         """ Decode Packet 57 (Side Brush Motor Current) and return its value
@@ -1645,7 +1634,6 @@ class sensorPacketDecoder(object):
         """
         return self.decode_bool(data)
 
-
     def decode_bool(self, byte):
         """ Decode a byte and return the value
 
@@ -1654,7 +1642,6 @@ class sensorPacketDecoder(object):
             Returns: True or False
         """
         return bool(struct.unpack('B', byte)[0])
-
 
     def decode_unsigned_short(self, low, high):
         """ Decode an 16 bit unsigned short from two bytes.
