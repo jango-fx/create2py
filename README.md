@@ -1,21 +1,24 @@
 # Create2API
 A python library for controlling the iRobot Create 2
 
-###Simple
+Heavily based on Brandon Pomeroys version (https://github.com/pomeroyb/Create2Control).
+With a few tweaks and updates for ease of use.
+
+
+### Simple
 Create2API is made to give simple access to basic, often used functions on the iRobot Create 2. It keeps all the important info about your Create 2 in an easy to access JSON file.
 
-###Safe
+### Safe
 Create2API has a lot of checks in place to make sure you don't send a bad command to your robot. If something won't work, Create2API will let you know!
 
-###Easy to use
+### Easy to use
 Create2API is meant to be interacted with through a single class: "Create2". Interacting with your bot is a breeze:
 
 ```python
 import create2api
 import time
 
-#Create a Create2. This will automatically try to connect to your
-#	robot over serial
+#Create a Create2. This will automatically try to connect to your robot over serial
 bot = create2api.Create2()
 
 #Start the Create2
@@ -45,7 +48,7 @@ bot.destroy()
 ```
 
 
-##Implemented OI codes
+## Implemented OI codes
 - Start
 - Reset
 - Stop
@@ -63,7 +66,7 @@ bot.destroy()
 - Digit LED ASCII
 - Sensors
 
-##Unimplemented OI codes
+## Unimplemented OI codes
 - Schedule
 - Drive Direct
 - Drive PWM
