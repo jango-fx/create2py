@@ -85,7 +85,7 @@ class Config(object):
         Opcodes and other useful dicts
     """
 
-    def __init__(self, fileName='create2api/config.json'):
+    def __init__(self, fileName=os.path.dirname(__file__)+'/config.json'):
         self.fname = fileName
         self.data = None
 
@@ -167,7 +167,7 @@ class Create2(object):
         This is the only class that outside scripts should be interacting with.
     """
 
-    def __init__(self, portName='/dev/ttyUSB0', baud=115200, configFileName='create2api/config.json'):
+    def __init__(self, portName='/dev/ttyUSB0', baud=115200, configFileName=os.path.dirname(__file__)+'/config.json'):
         # portName = '/dev/ttyUSB0'  # for RPi
         # portName = '/dev/cu.usbserial-DA01NWTC' # for MacBook
         self.SCI = SerialCommandInterface(portName, baud)
