@@ -7,9 +7,10 @@ dir = os.path.dirname(__file__)
 configFile = dir+'/config.json'
 
 print '//// Start Connection ////////////////////////////////////////////'
-bot = create2api.Create2(configFile)
+#bot = create2api.Create2()
+bot = create2api.Create2('/dev/cu.usbserial-DA01NWTC', 115200)
 bot.start()
-bot.safe()
+# bot.safe()
 
 # # # # # # # # # # INIFINITE LOOP # # # # # # # # # # # # # # # # # # # #
 while True:
