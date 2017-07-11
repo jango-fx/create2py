@@ -7,7 +7,7 @@ dir = os.path.dirname(__file__)
 configFile = dir+'/create2api/config.json'
 
 print '//// Start Connection ////////////////////////////////////////////'
-#bot = create2api.Create2()
+# bot = create2api.Create2()
 bot = create2api.Create2('/dev/cu.usbserial-DA01NWTC', 115200, configFile)
 bot.start()
 # bot.safe()
