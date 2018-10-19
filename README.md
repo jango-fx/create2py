@@ -2,7 +2,7 @@
 A python library for controlling the iRobot Create 2
 
 Heavily based on Brandon Pomeroys version (https://github.com/pomeroyb/Create2Control).
-With a few tweaks and updates for ease of use.
+Currently more or less a a refactoring with a few tweaks and updates for ease of use.
 
 
 ### Simple
